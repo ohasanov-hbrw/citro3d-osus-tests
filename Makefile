@@ -41,6 +41,11 @@ GFXBUILD	:=	$(BUILD)
 #ROMFS		:=	romfs
 #GFXBUILD	:=	$(ROMFS)/gfx
 
+
+APP_TITLE := Citro2D Texture Tests
+APP_DESCRIPTION := Chaos = OpenGL + 3DS
+APP_AUTHOR := ohasanov
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
