@@ -53,6 +53,24 @@ int main(int argc, char* argv[]) {
 	int x = 0; 
 	int y = 0; 
 
+	C2D_ImageTint TintColor;
+	for(int i = 0; i < 4; i++){
+		TintColor.corners[i].color = C2D_Color32(0, 255, 0, 255);
+		TintColor.corners[i].blend = 0.5f;
+	}
+
+	C2D_ImageTint Red;
+	for(int i = 0; i < 4; i++){
+		Red.corners[i].color = C2D_Color32(255, 0, 0, 255);
+		Red.corners[i].blend = 0.5f;
+	}
+
+
+	int x1 = 0;
+	int y1 = 0;
+	int cx = 2;
+	int cy = 2;
+
 	while (aptMainLoop()){
 		hidScanInput();
 		u32 kDown = hidKeysDown();
@@ -72,37 +90,47 @@ int main(int argc, char* argv[]) {
 		if(x > 400)	x = 400;
 		if(y < 0)	y = 0;
 		if(x < 0)	x = 0;
+
+		if(y1 + cy > 240-64)	cy = -2;
+		if(x1 + cx > 400-64)	cx = -2;
+		if(y1 + cy < 0)	cy = 2;
+		if(x1 + cx < 0)	cx = 2;
+
+		x1 += cx;
+		y1 += cy;
+
 		gettimeofday(&tv, NULL); 
 		if(lastMs > tv.tv_usec){
 			secs++;
 		}
-		printf("\x1B[2J\x1B[H");
-		printf("freamreta daat\n");
-		printf("CPU:     %6.2f%%\n", C3D_GetProcessingTime()*6.0f);
-		printf("GPU:     %6.2f%%\n", C3D_GetDrawingTime()*6.0f);
-		printf("CmdBuf:  %6.2f%%\n", C3D_GetCmdBufUsage()*100.0f);
-		printf("s:      %lld.%lld\n", secs, (long long int)tv.tv_usec / 1000);
+
 		long long int delta = std::abs(lastMs - tv.tv_usec);
 		if(lastMs > tv.tv_usec){
 			delta = std::abs(lastMs - (tv.tv_usec + 1000000));
 		}
 		delta /= 1000;
-		printf("delta:  %lld\n", delta);
-		printf("fps:  %6.2f\n", 1000.0f / (double)delta);
+
+		if (kHeld & KEY_A){
+			printf("\x1B[2J\x1B[H");
+			printf("freamreta daat\n");
+			printf("CPU:     %6.2f%%\n", C3D_GetProcessingTime()*6.0f);
+			printf("GPU:     %6.2f%%\n", C3D_GetDrawingTime()*6.0f);
+			printf("CmdBuf:  %6.2f%%\n", C3D_GetCmdBufUsage()*100.0f);
+			printf("s:      %lld.%lld\n", secs, (long long int)tv.tv_usec / 1000);
+			printf("delta:  %lld\n", delta);
+			printf("fps:  %6.2f\n", 1000.0f / (double)delta);
+		}
+
 		lastMs = tv.tv_usec;
 
-
-		C2D_ImageTint TintColor;
-		for(int i = 0; i < 4; i++){
-			TintColor.corners[i].color = C2D_Color32(255, 255, 255, 255);
-			TintColor.corners[i].blend = 0.0f;
-		}
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
 		C2D_SceneBegin(top);
 
-		C2D_DrawImageAt(osu_texture2d.img, x, y, 0, &TintColor, 0.5f, 0.5f);
 
+		
+		C2D_DrawImageAt(osu_texture2d.img, x, y, 0, &TintColor, 0.5f, 0.5f);
+		C2D_DrawImageAt(osu_texture2d.img, x1, y1, 0, &Red, 0.25f, 0.25f);
 
 		C3D_FrameEnd(0);
 	}
