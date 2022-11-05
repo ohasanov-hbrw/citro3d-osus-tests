@@ -1,18 +1,13 @@
 // Simple citro2d untextured shape example
 
 #include <3ds.h>
-
-#include <citro2d.h>
-
-#include <tex3ds.h>
+#include <raylib2citro3d.hpp>
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
-
-#include "modeosu_t3x.h"
 
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
@@ -23,7 +18,12 @@ long long int lastMs;
 struct timeval tv;
 
 
-static C3D_Tex osu_tex;
+/*static C3D_Tex osu_tex;
+static Tex3DS_Texture osu_texture;
+static C2D_Image osu_image;*/
+
+Renderer raylib;
+Renderer::Texture2D osu_texture2d;
 
 
 //---------------------------------------------------------------------------------
@@ -42,14 +42,36 @@ int main(int argc, char* argv[]) {
 	printf("\x1B[2J\x1B[H");
 	printf("loodin teksturz\n");
 
-	C3D_TexLoadImage(&osu_tex, modeosu_t3x, GPU_TEXFACE_2D, 0);
+	//C3D_TexLoadImage(&osu_tex, modeosu_t3x, GPU_TEXFACE_2D, 0);
+
+	/*osu_texture = Tex3DS_TextureImport(modeosu_t3x, modeosu_t3x_size, &osu_tex, NULL, false); 	
+	osu_image.tex = &osu_tex;
+	osu_image.subtex = Tex3DS_GetSubTexture(osu_texture, 0);*/
+
+	osu_texture2d = raylib.LoadTexture2D(modeosu_t3x, modeosu_t3x_size, false);
+
+	int x = 0; 
+	int y = 0; 
 
 	while (aptMainLoop()){
 		hidScanInput();
 		u32 kDown = hidKeysDown();
+		u32 kHeld = hidKeysHeld();
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
-		
+
+		if (kHeld & KEY_DRIGHT)
+			x+=2;
+		if (kHeld & KEY_DLEFT)
+			x-=2;
+		if (kHeld & KEY_DUP)
+			y-=2;
+		if (kHeld & KEY_DDOWN)
+			y+=2;
+		if(y > 240)	y = 240;
+		if(x > 400)	x = 400;
+		if(y < 0)	y = 0;
+		if(x < 0)	x = 0;
 		gettimeofday(&tv, NULL); 
 		if(lastMs > tv.tv_usec){
 			secs++;
@@ -70,13 +92,16 @@ int main(int argc, char* argv[]) {
 		lastMs = tv.tv_usec;
 
 
-
-
+		C2D_ImageTint TintColor;
+		for(int i = 0; i < 4; i++){
+			TintColor.corners[i].color = C2D_Color32(255, 255, 255, 255);
+			TintColor.corners[i].blend = 0.0f;
+		}
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
 		C2D_SceneBegin(top);
 
-
+		C2D_DrawImageAt(osu_texture2d.img, x, y, 0, &TintColor, 0.5f, 0.5f);
 
 
 		C3D_FrameEnd(0);
