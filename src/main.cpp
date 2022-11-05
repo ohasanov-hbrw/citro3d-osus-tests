@@ -1,5 +1,10 @@
 // Simple citro2d untextured shape example
+
+#include <3ds.h>
+
 #include <citro2d.h>
+
+#include <tex3ds.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -7,7 +12,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-
+#include "modeosu_t3x.h"
 
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
@@ -16,6 +21,10 @@ long long int secs = 0;
 
 long long int lastMs;
 struct timeval tv;
+
+
+static C3D_Tex osu_tex;
+
 
 //---------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
@@ -29,6 +38,12 @@ int main(int argc, char* argv[]) {
 	C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 	gettimeofday(&tv, NULL); 
 	lastMs = tv.tv_usec;
+
+	printf("\x1B[2J\x1B[H");
+	printf("loodin teksturz\n");
+
+	C3D_TexLoadImage(&osu_tex, modeosu_t3x, GPU_TEXFACE_2D, 0);
+
 	while (aptMainLoop()){
 		hidScanInput();
 		u32 kDown = hidKeysDown();
@@ -39,9 +54,6 @@ int main(int argc, char* argv[]) {
 		if(lastMs > tv.tv_usec){
 			secs++;
 		}
-
-		
-
 		printf("\x1B[2J\x1B[H");
 		printf("freamreta daat\n");
 		printf("CPU:     %6.2f%%\n", C3D_GetProcessingTime()*6.0f);
@@ -55,13 +67,17 @@ int main(int argc, char* argv[]) {
 		delta /= 1000;
 		printf("delta:  %lld\n", delta);
 		printf("fps:  %6.2f\n", 1000.0f / (double)delta);
-
-
 		lastMs = tv.tv_usec;
+
+
+
 
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
 		C2D_SceneBegin(top);
+
+
+
 
 		C3D_FrameEnd(0);
 	}
