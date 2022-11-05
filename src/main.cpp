@@ -26,6 +26,10 @@ Renderer raylib;
 Renderer::Texture2D osu_texture2d;
 
 
+int xcords[100];
+int ycords[100];
+int cxcords[100];
+int cycords[100];
 //---------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 //---------------------------------------------------------------------------------
@@ -48,7 +52,7 @@ int main(int argc, char* argv[]) {
 	osu_image.tex = &osu_tex;
 	osu_image.subtex = Tex3DS_GetSubTexture(osu_texture, 0);*/
 
-	osu_texture2d = raylib.LoadTexture2D(modeosu_t3x, modeosu_t3x_size, false);
+	osu_texture2d = raylib.LoadTexture2D(modeosu_t3x, modeosu_t3x_size, true);
 
 	int x = 0; 
 	int y = 0; 
@@ -66,10 +70,16 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	int x1 = 0;
-	int y1 = 0;
-	int cx = 2;
-	int cy = 2;
+	for(int i = 0; i < 100; i++){
+		xcords[i] = rand() % (400 - 64);
+		ycords[i] = rand() % (240 - 64);
+		int cx = rand() % 2;
+		if(cx == 0) cxcords[i] = -2;
+		else cxcords[i] = 2;
+		int cy = rand() % 2;
+		if(cy == 0) cycords[i] = -2;
+		else cycords[i] = 2;
+	}
 
 	while (aptMainLoop()){
 		hidScanInput();
@@ -86,18 +96,20 @@ int main(int argc, char* argv[]) {
 			y-=2;
 		if (kHeld & KEY_DDOWN)
 			y+=2;
-		if(y > 240)	y = 240;
-		if(x > 400)	x = 400;
+		if(y > 240-128)	y = 240-128;
+		if(x > 400-128)	x = 400-128;
 		if(y < 0)	y = 0;
 		if(x < 0)	x = 0;
 
-		if(y1 + cy > 240-64)	cy = -2;
-		if(x1 + cx > 400-64)	cx = -2;
-		if(y1 + cy < 0)	cy = 2;
-		if(x1 + cx < 0)	cx = 2;
 
-		x1 += cx;
-		y1 += cy;
+		for(int i = 0; i < 100; i++){
+			if(cycords[i] + ycords[i] > 240-64)	cycords[i] = -2;
+			if(cxcords[i] + xcords[i] > 400-64)	cxcords[i] = -2;
+			if(cycords[i] + ycords[i] < 0)	cycords[i] = 2;
+			if(cxcords[i] + xcords[i] < 0)	cxcords[i] = 2;
+			ycords[i] += cycords[i];
+			xcords[i] += cxcords[i];
+		}
 
 		gettimeofday(&tv, NULL); 
 		if(lastMs > tv.tv_usec){
@@ -130,7 +142,8 @@ int main(int argc, char* argv[]) {
 
 		
 		C2D_DrawImageAt(osu_texture2d.img, x, y, 0, &TintColor, 0.5f, 0.5f);
-		C2D_DrawImageAt(osu_texture2d.img, x1, y1, 0, &Red, 0.25f, 0.25f);
+		for(int i = 0; i < 100; i++)
+			C2D_DrawImageAt(osu_texture2d.img, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
 
 		C3D_FrameEnd(0);
 	}
