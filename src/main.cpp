@@ -1,7 +1,7 @@
 // Simple citro2d untextured shape example
 
 #include <3ds.h>
-#include <raylib2citro3d.hpp>
+#include <pomelo.hpp>
 
 #include <string.h>
 #include <stdio.h>
@@ -22,8 +22,8 @@ struct timeval tv;
 static Tex3DS_Texture osu_texture;
 static C2D_Image osu_image;*/
 
-Renderer raylib;
-Renderer::Texture2D osu_texture2d;
+
+PML_Image osu_texture2d;
 
 
 int xcords[100];
@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 	osu_image.tex = &osu_tex;
 	osu_image.subtex = Tex3DS_GetSubTexture(osu_texture, 0);*/
 
-	osu_texture2d = raylib.LoadTexture2D(modeosu_t3x, modeosu_t3x_size, true);
+	LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
 
 	int x = 0; 
 	int y = 0; 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 		}
 		delta /= 1000;
 
-		if (kHeld & KEY_A){
+		//if (kHeld & KEY_A){
 			printf("\x1B[2J\x1B[H");
 			printf("freamreta daat\n");
 			printf("CPU:     %6.2f%%\n", C3D_GetProcessingTime()*6.0f);
@@ -131,9 +131,13 @@ int main(int argc, char* argv[]) {
 			printf("s:      %lld.%lld\n", secs, (long long int)tv.tv_usec / 1000);
 			printf("delta:  %lld\n", delta);
 			printf("fps:  %6.2f\n", 1000.0f / (double)delta);
-		}
+		//}
 
 		lastMs = tv.tv_usec;
+
+
+		if (kDown & KEY_B)
+			UnloadTexture2D(&osu_texture2d);
 
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
