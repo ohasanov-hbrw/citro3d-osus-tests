@@ -7,8 +7,8 @@
 #include "modeosu_t3x.h"
 
 struct PML_Image{
-    C2D_Image img;
-    Tex3DS_Texture t3x;
+    C3D_Tex* tex;
+    Tex3DS_SubTexture subtex;
 };
 
 bool LoadTexture2D(const void *, size_t, PML_Image *, bool);

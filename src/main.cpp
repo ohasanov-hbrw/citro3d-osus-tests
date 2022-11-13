@@ -145,9 +145,9 @@ int main(int argc, char* argv[]) {
 
 
 		
-		C2D_DrawImageAt(osu_texture2d.img, x, y, 0, &TintColor, 0.5f, 0.5f);
+		C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
 		for(int i = 0; i < 100; i++)
-			C2D_DrawImageAt(osu_texture2d.img, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
+			C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
 
 		C3D_FrameEnd(0);
 	}
