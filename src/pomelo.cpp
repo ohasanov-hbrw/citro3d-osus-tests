@@ -32,3 +32,38 @@ void UnloadTexture2D(PML_Image * texture){
     //free(&texture->subtex);
     texture->loaded = false;
 }
+
+
+void DrawTexture2D(PML_Image * texture, int x, int y, uint32_t color, float blend, float scale){
+    if(texture->loaded){
+        C2D_ImageTint TintColor;
+        for(int i = 0; i < 4; i++){
+            TintColor.corners[i].color = color;
+            TintColor.corners[i].blend = blend;
+        }
+        C2D_DrawImageAt(C2D_Image{texture->tex, &texture->subtex}, x, y, 0, &TintColor, scale, scale);
+    }
+}
+
+void DrawTextureCenter2D(PML_Image * texture, int x, int y, uint32_t color, float blend, float scale){
+    if(texture->loaded){
+        C2D_ImageTint TintColor;
+        for(int i = 0; i < 4; i++){
+            TintColor.corners[i].color = color;
+            TintColor.corners[i].blend = blend;
+        }
+        C2D_DrawImageAt(C2D_Image{texture->tex, &texture->subtex}, x - ((float)(texture->subtex.width / 2)) * scale, y - ((float)(texture->subtex.height / 2)) * scale, 0, &TintColor, scale, scale);
+    }
+}
+
+void DrawTextureRotated2D(PML_Image * texture, int x, int y, uint32_t color, float blend, float scale, float rotation){
+    if(texture->loaded){
+        C2D_ImageTint TintColor;
+        for(int i = 0; i < 4; i++){
+            TintColor.corners[i].color = color;
+            TintColor.corners[i].blend = blend;
+        }
+        float pi = 3.141592;
+        C2D_DrawImageAtRotated(C2D_Image{texture->tex, &texture->subtex}, x, y, 0, (rotation * (pi / 180.0f)), &TintColor, scale, scale);
+    }
+}

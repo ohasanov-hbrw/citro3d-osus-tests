@@ -18,4 +18,6 @@ void StopPML2D();
 void LoadTexture2D(const void *, size_t, PML_Image *, bool);
 void UnloadTexture2D(PML_Image * );
 
-void DrawTexture2D();
+void DrawTexture2D(PML_Image *, int, int, uint32_t, float, float);
+void DrawTextureCenter2D(PML_Image *, int, int, uint32_t, float, float);
+void DrawTextureRotated2D(PML_Image *, int, int, uint32_t, float, float, float);

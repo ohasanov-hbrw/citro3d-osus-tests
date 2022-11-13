@@ -16,7 +16,8 @@ long long int secs = 0;
 
 long long int lastMs;
 struct timeval tv;
-
+int angle = 0;
+bool loaded = false;
 
 /*static C3D_Tex osu_tex;
 static Tex3DS_Texture osu_texture;
@@ -50,22 +51,10 @@ int main(int argc, char* argv[]) {
 	osu_image.subtex = Tex3DS_GetSubTexture(osu_texture, 0);*/
 
 	LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
+	loaded = true;
 
 	int x = 0; 
 	int y = 0; 
-
-	C2D_ImageTint TintColor;
-	for(int i = 0; i < 4; i++){
-		TintColor.corners[i].color = C2D_Color32(0, 255, 0, 255);
-		TintColor.corners[i].blend = 0.5f;
-	}
-
-	C2D_ImageTint Red;
-	for(int i = 0; i < 4; i++){
-		Red.corners[i].color = C2D_Color32(255, 0, 0, 128);
-		Red.corners[i].blend = 0.5f;
-	}
-
 
 	for(int i = 0; i < 100; i++){
 		xcords[i] = rand() % (400 - 64);
@@ -93,8 +82,8 @@ int main(int argc, char* argv[]) {
 			y-=2;
 		if (kHeld & KEY_DDOWN)
 			y+=2;
-		if(y > 240-128)	y = 240-128;
-		if(x > 400-128)	x = 400-128;
+		if(y > 240)	y = 240;
+		if(x > 400)	x = 400;
 		if(y < 0)	y = 0;
 		if(x < 0)	x = 0;
 
@@ -120,22 +109,32 @@ int main(int argc, char* argv[]) {
 		delta /= 1000;
 
 		//if (kHeld & KEY_A){
-			printf("\x1b[1;1Hfreamreta daat");
-			printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
-			printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
-			printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
-			printf("\x1b[5;1Hs:      %lld.%lld\x1b[K", secs, (long long int)tv.tv_usec / 1000);
-			printf("\x1b[6;1Hdelta:  %lld\x1b[K", delta);
-			printf("\x1b[7;1Hfps:  %6.2f\x1b[K", 1000.0f / (double)delta);
+		printf("\x1b[1;1Hfreamreta daat\x1b[K");
+		printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
+		printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
+		printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
+		printf("\x1b[5;1Hs:      %lld.%lld\x1b[K", secs, (long long int)tv.tv_usec / 1000);
+		printf("\x1b[6;1Hdelta:  %lld\x1b[K", delta);
+		printf("\x1b[7;1Hfps:  %6.2f\x1b[K", 1000.0f / (double)delta);
+		printf("\x1b[8;1Hangle:  %d\x1b[K", angle);
+		printf("\x1b[9;1Hloaded:  %d\x1b[K", (int)loaded);
 		//}
 
 		lastMs = tv.tv_usec;
 
+		if (kHeld & KEY_X)
+			angle += 2;
+		if (kHeld & KEY_Y)
+			angle -= 2;
 
-		if (kDown & KEY_B)
+		if (kDown & KEY_A){
 			UnloadTexture2D(&osu_texture2d);
-		if (kDown & KEY_X)
+			loaded = false;
+		}
+		if (kDown & KEY_B){
 			LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
+			loaded = true;
+		}
 
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
@@ -143,11 +142,13 @@ int main(int argc, char* argv[]) {
 
 
 		
-		if(osu_texture2d.loaded)
-			C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
-		for(int i = 0; i < 100; i++)
-			if(osu_texture2d.loaded)
-				C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
+		//if(osu_texture2d.loaded)
+			//C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
+		DrawTextureRotated2D(&osu_texture2d, x, y, C2D_Color32(0, 255, 0, 255), 0.5f, 0.5f, angle);
+		for(int i = 0; i < 15; i++)
+			//if(osu_texture2d.loaded)
+				//C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
+			DrawTexture2D(&osu_texture2d, xcords[i], ycords[i], C2D_Color32(255, 0, 0, 128), 0.5f, 0.25f);
 
 		C3D_FrameEnd(0);
 	}
