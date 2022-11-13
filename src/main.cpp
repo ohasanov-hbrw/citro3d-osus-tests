@@ -34,10 +34,7 @@ int cycords[100];
 int main(int argc, char* argv[]) {
 //---------------------------------------------------------------------------------
 	// Init libs
-	gfxInitDefault();
-	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
-	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
-	C2D_Prepare();
+	InitPML2D();
 	consoleInit(GFX_BOTTOM, NULL);
 	C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
 	gettimeofday(&tv, NULL); 
@@ -65,7 +62,7 @@ int main(int argc, char* argv[]) {
 
 	C2D_ImageTint Red;
 	for(int i = 0; i < 4; i++){
-		Red.corners[i].color = C2D_Color32(255, 0, 0, 255);
+		Red.corners[i].color = C2D_Color32(255, 0, 0, 128);
 		Red.corners[i].blend = 0.5f;
 	}
 
@@ -123,14 +120,13 @@ int main(int argc, char* argv[]) {
 		delta /= 1000;
 
 		//if (kHeld & KEY_A){
-			printf("\x1B[2J\x1B[H");
-			printf("freamreta daat\n");
-			printf("CPU:     %6.2f%%\n", C3D_GetProcessingTime()*6.0f);
-			printf("GPU:     %6.2f%%\n", C3D_GetDrawingTime()*6.0f);
-			printf("CmdBuf:  %6.2f%%\n", C3D_GetCmdBufUsage()*100.0f);
-			printf("s:      %lld.%lld\n", secs, (long long int)tv.tv_usec / 1000);
-			printf("delta:  %lld\n", delta);
-			printf("fps:  %6.2f\n", 1000.0f / (double)delta);
+			printf("\x1b[1;1Hfreamreta daat");
+			printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
+			printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
+			printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
+			printf("\x1b[5;1Hs:      %lld.%lld\x1b[K", secs, (long long int)tv.tv_usec / 1000);
+			printf("\x1b[6;1Hdelta:  %lld\x1b[K", delta);
+			printf("\x1b[7;1Hfps:  %6.2f\x1b[K", 1000.0f / (double)delta);
 		//}
 
 		lastMs = tv.tv_usec;
@@ -138,6 +134,8 @@ int main(int argc, char* argv[]) {
 
 		if (kDown & KEY_B)
 			UnloadTexture2D(&osu_texture2d);
+		if (kDown & KEY_X)
+			LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
 
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
@@ -145,15 +143,13 @@ int main(int argc, char* argv[]) {
 
 
 		
-		C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
+		if(osu_texture2d.loaded)
+			C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
 		for(int i = 0; i < 100; i++)
-			C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
+			if(osu_texture2d.loaded)
+				C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
 
 		C3D_FrameEnd(0);
 	}
-
-	C2D_Fini();
-	C3D_Fini();
-	gfxExit();
 	return 0;
 }
