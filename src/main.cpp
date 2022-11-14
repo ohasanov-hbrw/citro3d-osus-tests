@@ -3,6 +3,8 @@
 #include <3ds.h>
 #include <pomelo.hpp>
 
+
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,29 +14,35 @@
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
 
-long long int secs = 0;
 
-long long int lastMs;
-struct timeval tv;
-int angle = 0;
-bool loaded = false;
-
-/*static C3D_Tex osu_tex;
-static Tex3DS_Texture osu_texture;
-static C2D_Image osu_image;*/
-
-
-PML_Image osu_texture2d;
-C3D_RenderTarget* renderTarget;
-
-int xcords[100];
-int ycords[100];
-int cxcords[100];
-int cycords[100];
 //---------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 //---------------------------------------------------------------------------------
+	long long int secs = 0;
+
+	long long int lastMs;
+	struct timeval tv;
+	int angle = 0;
+	bool loaded = false;
+
+	/*static C3D_Tex osu_tex;
+	static Tex3DS_Texture osu_texture;
+	static C2D_Image osu_image;*/
+
+
+	PML_Image osu_texture2d;
+	C3D_RenderTarget* renderTarget;
+
+	int xcords[100];
+	int ycords[100];
+	int cxcords[100];
+	int cycords[100];
+
+
+
 	// Init libs
+
+	romfsInit();
 	InitPML2D();
 	consoleInit(GFX_BOTTOM, NULL);
 	C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
@@ -50,7 +58,8 @@ int main(int argc, char* argv[]) {
 	osu_image.tex = &osu_tex;
 	osu_image.subtex = Tex3DS_GetSubTexture(osu_texture, 0);*/
 
-	LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
+	//LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
+	LoadTexturePNG2D("romfs:/gfx/modeosu.png", &osu_texture2d, true);
 	loaded = true;
 
 	renderTarget = C3D_RenderTargetCreateFromTex(&osu_texture2d.tex, GPU_TEXFACE_2D, 0, -1);
@@ -110,17 +119,17 @@ int main(int argc, char* argv[]) {
 		}
 		delta /= 1000;
 
-		//if (kHeld & KEY_A){
-		printf("\x1b[1;1Hfreamreta daat\x1b[K");
-		printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
-		printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
-		printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
-		printf("\x1b[5;1Hs:      %lld.%lld\x1b[K", secs, (long long int)tv.tv_usec / 1000);
-		printf("\x1b[6;1Hdelta:  %lld\x1b[K", delta);
-		printf("\x1b[7;1Hfps:  %6.2f\x1b[K", 1000.0f / (double)delta);
-		printf("\x1b[8;1Hangle:  %d\x1b[K", angle);
-		printf("\x1b[9;1Hloaded:  %d\x1b[K", (int)loaded);
-		//}
+		if (kHeld & KEY_R){
+			printf("\x1b[1;1Hfreamreta daat\x1b[K");
+			printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
+			printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
+			printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
+			printf("\x1b[5;1Hs:      %lld.%lld\x1b[K", secs, (long long int)tv.tv_usec / 1000);
+			printf("\x1b[6;1Hdelta:  %lld\x1b[K", delta);
+			printf("\x1b[7;1Hfps:  %6.2f\x1b[K", 1000.0f / (double)delta);
+			printf("\x1b[8;1Hangle:  %d\x1b[K", angle);
+			printf("\x1b[9;1Hloaded:  %d\x1b[K", (int)loaded);
+		}
 
 		lastMs = tv.tv_usec;
 
@@ -134,7 +143,7 @@ int main(int argc, char* argv[]) {
 			loaded = false;
 		}
 		if (kDown & KEY_B){
-			LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
+			LoadTexturePNG2D("romfs:/gfx/modeosu.png", &osu_texture2d, true);
 			loaded = true;
 		}
 
@@ -142,7 +151,7 @@ int main(int argc, char* argv[]) {
 		C2D_Prepare();
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
 
-		if(loaded){
+		if(osu_texture2d.loaded){
 			if (kDown & KEY_SELECT){
 				//C2D_SceneTarget(renderTarget);
 				renderTarget = C3D_RenderTargetCreateFromTex(&osu_texture2d.tex, GPU_TEXFACE_2D, 0, -1);
