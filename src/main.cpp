@@ -157,7 +157,9 @@ int main(int argc, char* argv[]) {
 				renderTarget = C3D_RenderTargetCreateFromTex(&osu_texture2d.tex, GPU_TEXFACE_2D, 0, -1);
 				C2D_SceneBegin(renderTarget);
 				//freeC2D_TargetClear(renderTarget, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF));
-				C2D_DrawRectSolid(0, 0, 0, 128, 128, C2D_Color32(0xFF, 0x00, 0xFF, 0xFF));
+				//C2D_DrawRectSolid(0, 0, 0, 128, 128, C2D_Color32(0xFF, 0x00, 0xFF, 0xFF));
+				DrawTextureRotated2D(&osu_texture2d, 125, 125, C2D_Color32(255, 255, 255, 255), 1.0f, 1.0f, angle);
+				DrawTextureRotated2D(&osu_texture2d, 125, 125, C2D_Color32(0, 0, 0, 255), 1.0f, 0.9f, angle);
 				C2D_Flush();
 			}
 		}
