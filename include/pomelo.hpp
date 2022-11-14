@@ -6,7 +6,7 @@
 #include "modeosu_t3x.h"
 
 struct PML_Image{
-    C3D_Tex* tex;
+    C3D_Tex tex;
     Tex3DS_SubTexture subtex;
     bool loaded = false;
 };
