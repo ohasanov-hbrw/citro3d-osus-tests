@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
 				renderTarget = C3D_RenderTargetCreateFromTex(&osu_texture2d.tex, GPU_TEXFACE_2D, 0, -1);
 				C2D_SceneBegin(renderTarget);
 				//freeC2D_TargetClear(renderTarget, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF));
-				C2D_DrawRectSolid(0, 0, 0, 128, 128, C2D_Color32(0x00, 0x00, 0xFF, 0xFF));
+				C2D_DrawRectSolid(0, 0, 0, 128, 128, C2D_Color32(0xFF, 0x00, 0xFF, 0xFF));
 				C2D_Flush();
 			}
 		}
@@ -169,11 +169,11 @@ int main(int argc, char* argv[]) {
 		
 		//if(osu_texture2d.loaded)
 			//C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, x, y, 0, &TintColor, 0.5f, 0.5f);
-		DrawTextureRotated2D(&osu_texture2d, x, y, C2D_Color32(0, 255, 0, 255), 0.5f, 1.0f, angle);
+		DrawTextureRotated2D(&osu_texture2d, x, y, C2D_Color32(255, 255, 255, 255), 0.0f, 1.0f, angle);
 		for(int i = 0; i < 15; i++)
 			//if(osu_texture2d.loaded)
 				//C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
-			DrawTexture2D(&osu_texture2d, xcords[i], ycords[i], C2D_Color32(255, 0, 0, 128), 0.5f, 0.25f);
+			DrawTexture2D(&osu_texture2d, xcords[i], ycords[i], C2D_Color32(255, 255, 255, 128), 0.0f, 0.25f);
 
 
 		C2D_DrawRectSolid(0, 0, 0, 30, 30, C2D_Color32(0x00, 0x00, 0xFF, 0xFF));
