@@ -25,7 +25,7 @@ static C2D_Image osu_image;*/
 
 
 PML_Image osu_texture2d;
-
+C3D_RenderTarget* renderTarget;
 
 int xcords[100];
 int ycords[100];
@@ -52,6 +52,8 @@ int main(int argc, char* argv[]) {
 
 	LoadTexture2D(modeosu_t3x, modeosu_t3x_size, &osu_texture2d, true);
 	loaded = true;
+
+	renderTarget = C3D_RenderTargetCreateFromTex(osu_texture2d.tex, GPU_TEXFACE_2D, 0, -1);
 
 	int x = 0; 
 	int y = 0; 
@@ -136,9 +138,21 @@ int main(int argc, char* argv[]) {
 			loaded = true;
 		}
 
-		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW); // C3D_FRAME_SYNCDRAW
+		C2D_Prepare();
 		C2D_TargetClear(top, C2D_Color32(0x00, 0x00, 0x00, 0xFF));
+
+		if(loaded){
+			if (kDown & KEY_SELECT){
+				//C2D_SceneTarget(renderTarget);
+				C2D_SceneBegin(renderTarget);
+				C2D_TargetClear(renderTarget, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF));
+				C2D_DrawRectSolid(0, 0, 0, 10, 10, C2D_Color32(0x00, 0x00, 0xFF, 0xFF));
+			}
+		}
+		//C2D_SceneTarget(top);
 		C2D_SceneBegin(top);
+
 
 
 		
@@ -150,7 +164,16 @@ int main(int argc, char* argv[]) {
 				//C2D_DrawImageAt(C2D_Image{osu_texture2d.tex, &osu_texture2d.subtex}, xcords[i], ycords[i], 0, &Red, 0.25f, 0.25f);
 			DrawTexture2D(&osu_texture2d, xcords[i], ycords[i], C2D_Color32(255, 0, 0, 128), 0.5f, 0.25f);
 
+
+		C2D_DrawRectSolid(0, 0, 0, 30, 30, C2D_Color32(0x00, 0x00, 0xFF, 0xFF));
+		C2D_Flush();
+
 		C3D_FrameEnd(0);
 	}
+
+	UnloadTexture2D(&osu_texture2d);
+	StopPML2D();
+
+
 	return 0;
 }
